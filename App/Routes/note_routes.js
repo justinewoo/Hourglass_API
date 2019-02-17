@@ -8,8 +8,8 @@ module.exports = function(app, db) {
 
     app.post('/hourglass_db/', (req, res) => {
         console.log('sup')
-        var todo = req.body.todo;
         var type = req.body.type;
+        var todo = req.body.todo;
         if (type == "user") {
             if (todo == "register") {
                 var reg = {
@@ -26,6 +26,28 @@ module.exports = function(app, db) {
                     }
                 })
                 return
+            } else if (todo == "login") {
+                var userQuery = {
+                    username: req.body.username,
+                    password: req.body.password
+                }
+                db.collection('users').findOne(userQuery, (err, item) => {
+                    if (err) {
+                        res.send(err)
+                    } else {
+                        res.send(item)
+                    }
+                })
+                return
+            } else if (todo == "getAllUsers") {
+              db.collection('users').find({}).toArray(function(err, docs) {
+                if (err) {
+                    throw err;
+                } else {
+                    res.send(docs);
+                };
+              });
+              return;
             }
         }
     })
