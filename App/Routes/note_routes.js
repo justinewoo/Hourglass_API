@@ -48,6 +48,37 @@ module.exports = function(app, db) {
                 };
               });
               return;
+            } else if (todo == "postMessage") {
+              var postMessageData = {
+                time: req.body.time,
+                day: req.body.day,
+                month: req.body.month,
+                year: req.body.year,
+                message: req.body.message,
+                receiver: req.body.receiver,
+                sender: req.body.sender
+              }
+              db.collection('messages').insert(postMessageData, (err, result) => {
+                if (err) {
+                    res.send(err)
+                } else {
+                    res.send("Successfully sent " + JSON.stringify(postMessageData))
+                }
+              })
+              return
+            } else if (todo == "getMessage") {
+              var getMessageData = {
+                sender: req.body.sender,
+                receiver: req.body.receiver
+              }
+              db.collection('messages').find(getMessageData).toArray(function(err, docs) {
+                if (err) {
+                  throw err
+                } else {
+                  res.send(docs)
+                };
+              });
+              return;
             }
         }
     })
