@@ -79,7 +79,45 @@ module.exports = function(app, db) {
                 };
               });
               return;
+            } else if (todo == "postScheduledMessage") {
+              var postMessageData = {
+                username: req.body.username,
+                listOfMessages: []
+              }
+              db.collection('scheduled_messages').insert(postMessageData, (err, result) => {
+                if (err) {
+                    res.send(err)
+                } else {
+                    res.send("Successfully sent " + JSON.stringify(postMessageData))
+                }
+              })
+              return
             }
+            var getMessageData = {
+              username: req.body.username
+            }
+            db.collection('scheduled_messages').findOne(getMessageData, (err, item) => {
+              if (err) {
+                res.send(err)
+              } else {
+                var updated = item
+                //console.log(updated)
+                updated._id = ObjectId(updated._id)
+                if (todo == "updateMessage") {
+                  var newMessage = req.body.newMessage
+                  console.log(newMessage)
+                  updated['listOfMessages'].push(newMessage)
+                  db.collection('scheduled_messages').update(getMessageData, updated, (err, result) => {
+                    if (err) {
+                      res.send(err);
+                    } else {
+                        res.send('Updated' + updated);
+                    }
+                  })
+                }
+              }
+            })
+
         }
     })
 }
